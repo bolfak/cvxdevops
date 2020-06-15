@@ -4,6 +4,8 @@ pipeline {
     APP_VERSION = '${BUILD_NUMBER}'
     DOCKER_REGISTRY = 'bolfak'
     APP_NAME = 'myfirstwebapp'
+    DEPLOYMENT_NAME = 'myapp-test-deployment'
+    CONTAINER_NAME = 'myapp-test'
     dockerImage = ''
     REGISTRY_CREDENTIALS = 'DockerHub'
   }
@@ -25,12 +27,19 @@ pipeline {
         }
       }
     }
-    stage('Deploy Docker Image') {
+    stage('Push Docker Image to Registry') {
       steps {
         script {
           docker.withRegistry( '', REGISTRY_CREDENTIALS) {
             dockerImage.push()
           }
+        }
+      }
+    }
+    stage('Deploy to Cluster') {
+      steps {
+        script {
+          sh 'kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${DOCKER_REGISTRY}/${APP_NAME}:${APP_VERSION}'
         }
       }
     }
