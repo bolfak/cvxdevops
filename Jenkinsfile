@@ -23,7 +23,7 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         script {
-          dockerImage = docker.build "${DOCKER_REGISTRY}/${APP_NAME}:${APP_VERSION}"
+          dockerImage = docker.build "${DOCKER_REGISTRY}/${APP_NAME}:${BUILD_NUMBER}"
         }
       }
     }
@@ -39,7 +39,7 @@ pipeline {
     stage('Deploy to Cluster') {
       steps {
         script {
-          sh '/var/lib/jenkins/bin/kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${DOCKER_REGISTRY}/${APP_NAME}:${APP_VERSION}'
+          sh '/var/lib/jenkins/bin/kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${DOCKER_REGISTRY}/${APP_NAME}:${BUILD_NUMBER}'
         }
       }
     }
